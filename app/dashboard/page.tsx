@@ -25,7 +25,7 @@ export function Dashboard() {
   return (
     <div className="flex h-screen w-full">
       <div className="bg-gray-100 dark:bg-gray-800 p-4 flex flex-col gap-4">
-        <Link className="flex items-center gap-2 text-lg font-semibold" href="/code-window">
+        <Link className="flex items-center gap-2 text-lg font-semibold" href="#">
           <LayoutGridIcon className="w-6 h-6" />
           <span className="sr-only">Dashboard</span>
         </Link>
@@ -34,10 +34,12 @@ export function Dashboard() {
             <BookIcon className="w-4 h-4" />
             Lessons
           </Button>
+          <Link href="/code-window">
           <Button className="justify-start gap-2" size="sm" variant="ghost">
             <CodeIcon className="w-4 h-4" />
             Code Practice
           </Button>
+          </Link>
           <Button className="justify-start gap-2" size="sm" variant="ghost">
             <PlayIcon className="w-4 h-4" />
             Simulator
@@ -79,9 +81,13 @@ export function Dashboard() {
           <Button className="bg-[#FFF3E0] text-[#FF9800] hover:bg-[#FFE0B2]" variant="primary">
             Lessons
           </Button>
+          
           <Button className="bg-[#E3F2FD] text-[#1E88E5] hover:bg-[#BBDEFB]" variant="primary">
-            Code Practice
+            <Link href="/code-window">
+              Code Practice
+            </Link>
           </Button>
+          
           <Button className="bg-[#F3E5F5] text-[#9C27B0] hover:bg-[#E1BEE7]" variant="primary">
             Simulator
           </Button>
@@ -173,3 +179,5 @@ function PlayIcon(props) {
     </svg>
   )
 }
+
+export default Dashboard;
