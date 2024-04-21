@@ -1,0 +1,11 @@
+/* styles/themes/light.css */
+:root {
+    --background-color: #d0acea;
+    --text-color: #333;
+}
+
+/* styles/themes/dark.css */
+:root {
+    --background-color: #333;
+    --text-color: #d6a4f6;
+}
