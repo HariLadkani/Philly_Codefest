@@ -1,13 +1,40 @@
-// components/ThemeSwitcher.tsx
-import React from 'react';
-import { useTheme } from '../contexts/ThemeContext';
+// contexts/ThemeContext.tsx
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-const ThemeSwitcher: React.FC = () => {
-    const { toggleTheme } = useTheme();
+type Theme = 'light' | 'dark';
+
+interface ThemeContextType {
+    theme: Theme;
+    toggleTheme: () => void;
+}
+
+const defaultState = {
+    theme: 'light' as Theme,
+    toggleTheme: () => {},
+};
+
+const ThemeContext = createContext<ThemeContextType>(defaultState);
+
+interface ThemeProviderProps {
+    children: ReactNode;
+}
+
+export const ThemeProvider = ({ children }: ThemeProviderProps) => {
+    const [theme, setTheme] = useState<Theme>('light');
+
+    useEffect(() => {
+        document.body.setAttribute('data-theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(theme === 'light' ? 'dark' : 'light');
+    };
 
     return (
-        <button onClick={toggleTheme}>Switch Theme</button>
+        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+            {children}
+        </ThemeContext.Provider>
     );
 };
 
-export default ThemeSwitcher;
+export const useTheme = () => useContext(ThemeContext);
