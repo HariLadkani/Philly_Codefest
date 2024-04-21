@@ -146,9 +146,12 @@ export function CodeWindow() {
               <h2 className="text-xl font-semibold">Chat</h2>
               <div className="flex flex-col h-[600px] rounded-md border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800">
                 <div className="flex-1 overflow-auto mb-4">
-                  {chatHistory.slice(1).map((msg, index) => (
-                      <div key={index} className="text-black dark:text-white p-2">{msg['content']}</div>
-                  ))}
+                {chatHistory.slice(1).map((msg, index) => (
+                  <div key={index}
+                    className={`text-black dark:text-white p-2 ${index % 2 === 0 ? 'odd-item' : 'even-item'}`}>
+                    {msg['content']}
+                  </div>
+                ))}
                 </div>
                 <div className="flex">
                   <ul id="unord">
