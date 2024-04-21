@@ -3,11 +3,14 @@ from flask_cors import CORS
 import multiprocessing
 import timeout_decorator
 import tensorflow as tf
+from io import StringIO
 import random
 import numpy as np
 from openai import OpenAI
+import json
 from dotenv import load_dotenv
 import os
+from contextlib import redirect_stdout
 
 # Load the environment variables from the .env file
 load_dotenv()
@@ -16,20 +19,24 @@ app = Flask(__name__)
 
 CORS(app)
 
-
 def execute_code(code):
     try:
-        exec(code, {"__name__": "__main__"})
+        f = StringIO()
+        with redirect_stdout(f):
+            exec(code, {"__name__": "__main__"})
+        return f.getvalue()
     except Exception as e:
         return str(e)
 
-
 def check_python_code(code):
+    global output
     try:
         # Check if the code compiles
         compile(code, '<string>', 'exec')
     except SyntaxError as e:
-        return "SyntaxError"
+        print("Syntax Error")
+        print(str(e))
+        return {"Status":"SyntaxError", "Message":str(e)}
 
     # Set a timeout and execute the code
     try:
@@ -39,19 +46,22 @@ def check_python_code(code):
         if process.is_alive():
             process.terminate()
             process.join()
-            return "Infinite"
+            return {"Status": "Infinite", "Message": "Compile Timeout Error, please check for infinite loops"}
     except timeout_decorator.timeout_decorator.TimeoutError:
-        return "Infinite"
+        return {"Status": "Infinite", "Message": "Compile Timeout Error, please check for infinite loops"}
     except Exception as e:
-        return f"Error"
-
-    return "Success"
+        return {"Status":"SyntaxError", "Message":e}
+    return {"Status":"Success","Message" : execute_code(code)}
 
 
 @app.route("/run", methods=["POST"])
 def run():
     content = f"""{request.get_json()["code"]}"""
-    return {"response": check_python_code(content)}
+    print(content)
+    res = check_python_code(content)
+    print(f"Res")
+    print(res)
+    return res
 
 @app.route("/llm_api", methods=["POST"])
 def llm_api():
@@ -68,6 +78,25 @@ def llm_chatbot_msg():
     response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:personal::9GCHGPWm", messages=[{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": request.get_json()["message"]}])
     msg = response.choices[0].message.content
     return {"feedback": msg}
+
+@app.route("/get_completion_list", methods=["GET"])
+def get_completion_list():
+    # if completion_list.json is empty populate it
+    if os.path.getsize("completion_list.json") == 0:
+        with open("completion_list.json", "w") as file:
+            file.write(json.dumps({"completion_list": [0]*28, "cur_q": 0}))
+    # Read from completion_list.json
+    with open("completion_list.json", "r") as file:
+        completion_list = json.loads(file.read())
+    return completion_list
+
+@app.route("/write_completion_list", methods=["POST"])
+def write_completion_list():
+    # Write to completion_list.json
+    with open("completion_list.json", "w") as file:
+        file.write(json.dumps(request.get_json()))
+    return {"Status": "Success"}
+
 
 
 @app.route("/recommend_question", methods=['POST'])
