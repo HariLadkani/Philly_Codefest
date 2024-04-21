@@ -38,14 +38,15 @@ export function CodeWindow() {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
     const data = await res.json();
+    console.log(data)
 
-    if (data.response == "Success"){
+    if (data["status"] === "Success"){
       setStatus("Success");
       setOutput("Code compiled");
     }
     else{
-      setStatus("error");
-      setOutput("Error compiling code!" + data.response + " Please try again!");
+      setStatus("Error");
+      setOutput("Error compiling code!\n" + data["Message"] + "\nPlease try again!");
     }
     console.log(status);
     console.log(output);
