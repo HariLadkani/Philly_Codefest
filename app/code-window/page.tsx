@@ -1,17 +1,25 @@
+// This must be a client component due to the use of browser-specific features such as the Monaco Editor.
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Editor } from "@monaco-editor/react";
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";  // Ensure you have this button component or replace it with a standard HTML button if not available.
+import { Editor } from "@monaco-editor/react";  // Import the Editor from @monaco-editor/react package.
 
 export function CodeWindow() {
-  const handleEditorChange = (value, event) => {
-    // handle changes in the editor
-    console.log(value);
+  // State to hold the user's code. Initialized with a default code snippet.
+  const [code, setCode] = useState("// Write your code here");
+
+  // Function to update the state with the latest code from the editor.
+  const handleEditorChange = (value: string | undefined, event: any) => {
+    if (value !== undefined) {
+      setCode(value);
+    }
   };
 
+  // Function to handle the execution of the code when the "Run" button is clicked.
   const handleRunCode = () => {
-    // logic to run the code written in the editor
-    console.log("Run the code here");
+    console.log("Running the code:", code);
+    // Here you could add logic to execute the code or send it to a server for safe execution.
   };
 
   return (
@@ -30,7 +38,7 @@ export function CodeWindow() {
                 <Editor
                     height="400px"
                     defaultLanguage="javascript"
-                    defaultValue="// Write your code here"
+                    defaultValue={code}
                     onChange={handleEditorChange}
                     theme="vs-dark"
                 />
@@ -48,4 +56,5 @@ export function CodeWindow() {
       </div>
   );
 }
+
 export default CodeWindow;
