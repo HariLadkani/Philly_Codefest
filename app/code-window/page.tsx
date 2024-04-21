@@ -3,11 +3,13 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Editor } from "@monaco-editor/react";
+import Link from 'next/link';
 
 export function CodeWindow() {
   const [code, setCode] = useState("// Write your code here");
-  const [chatMessage, setChatMessage] = useState("");  // State for storing chat message
-  const [chatHistory, setChatHistory] = useState<string[]>([]); // State to store chat history
+  const [output, setOutput] = useState("");  // State for storing the output of the code
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState<string[]>([]);
 
   const handleEditorChange = (value: string | undefined, event: any) => {
     if (value !== undefined) {
@@ -15,49 +17,38 @@ export function CodeWindow() {
     }
   };
 
+  // Simulate running the code and capturing the output
   const handleRunCode = () => {
     console.log("Running the code:", code);
+    // For simulation purposes, let's pretend it always returns "Execution result"
+    const simulatedOutput = "Execution result: " + Math.random(); // Random output to simulate different results
+    setOutput(simulatedOutput);
   };
 
-  // Function to handle sending the chat message
   const handleSendMessage = async () => {
-    if (chatMessage.trim() === "") return;  // Avoid sending empty messages
+    if (chatMessage.trim() === "") return;
+    setChatHistory(prevHistory => [...prevHistory, `You: ${chatMessage}`]);
+    setChatMessage("");
 
-    const userMessage = chatMessage;
-    setChatMessage("");  // Clear the message input
-    setChatHistory(prevHistory => [...prevHistory, `You: ${userMessage}`]); // Add the user message to the chat history
-
-    try {
-      // Send the user message to your backend
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: userMessage }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      // Assume the backend returns a JSON with a 'response' field containing the AI's response
-      const aiResponse = data.response;
-
-      // Update the chat history with the AI's response
+    setTimeout(() => {
+      const aiResponse = "This is a hardcoded response from the AI.";
       setChatHistory(prevHistory => [...prevHistory, `AI: ${aiResponse}`]);
-    } catch (error) {
-      console.error("Failed to send message:", error);
-      // Here you could update the chat history with a message indicating the error or handle it in another way
-    }
+    }, 500);
   };
 
   return (
       <div className="flex w-full min-h-screen">
         <main className="flex-1 bg-gray-100 dark:bg-gray-950">
           <div className="container mx-auto grid grid-cols-[1fr_300px] gap-8 p-8 md:p-12">
-            <div className="space-y-6">
+            {/* Back to Dashboard button */}
+            <div className="col-span-full mb-4">
+              <Link legacyBehavior href="/dashboard">
+                <a className="inline-block p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200">
+                  Back to Dashboard
+                </a>
+              </Link>
+            </div>
+            <div className="space-y-6 flex-1">
               <div className="rounded-md border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                 <h2 className="text-xl font-semibold">Question</h2>
                 <p className="mt-2 text-gray-500 dark:text-gray-400">
@@ -67,7 +58,7 @@ export function CodeWindow() {
               <div className="rounded-md border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                 <h2 className="text-xl font-semibold">Code Editor</h2>
                 <Editor
-                    height="400px"
+                    height="200px"
                     defaultLanguage="javascript"
                     defaultValue={code}
                     onChange={handleEditorChange}
@@ -76,13 +67,15 @@ export function CodeWindow() {
                 <div className="mt-4 flex justify-end">
                   <Button onClick={handleRunCode}>Run</Button>
                 </div>
+                {/* Output window for displaying the results of the code execution */}
+                <div className="mt-4 bg-gray-50 border border-gray-200 rounded p-2 text-black dark:bg-gray-900 dark:text-white">
+                  <strong>Output:</strong> {output}
+                </div>
               </div>
             </div>
-            <div
-                className="rounded-md border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div className="rounded-md border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
               <h2 className="text-xl font-semibold">Chat</h2>
-              <div
-                  className="flex flex-col h-[600px] rounded-md border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800">
+              <div className="flex flex-col h-[600px] rounded-md border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800">
                 <div className="flex-1 overflow-auto mb-4">
                   {chatHistory.map((msg, index) => (
                       <div key={index} className="text-black dark:text-white p-2">{msg}</div>
