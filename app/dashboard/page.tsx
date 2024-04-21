@@ -79,7 +79,9 @@ export function Dashboard() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Button className="bg-[#FFF3E0] text-[#FF9800] hover:bg-[#FFE0B2]" variant="primary">
-            Lessons
+            <Link href="/lessons">
+              Lessons
+            </Link>
           </Button>
           
           <Button className="bg-[#E3F2FD] text-[#1E88E5] hover:bg-[#BBDEFB]" variant="primary">

@@ -92,3 +92,5 @@ export function Lessons() {
     </main>
   )
 }
+
+export default Lessons;
