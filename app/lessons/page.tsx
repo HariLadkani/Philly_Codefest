@@ -48,7 +48,7 @@ const Lessons = () => {
     setActiveModal(modalName);
   };
 
-  const closeModal = (lesson) => {
+  async function closeModal(lesson) {
     localStorage.setItem('lastRead', lesson.toLowerCase());
     const lastReadModule = localStorage.getItem('lastRead');
     setActiveModal(null);
@@ -74,7 +74,27 @@ const Lessons = () => {
     else if (lastReadModule === "plus equals") {
         val = 6
     }
-    console.log(val)
+    if (val !== -1) {
+        const res = await fetch("http://127.0.0.1:3002/get_completion_list", {
+            method: "GET"
+        })
+        if (!res.ok){
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        data["completion_list"][val] = 1;
+        const r = await fetch("http://127.0.0.1:3002/write_completion_list", {
+            method: "POST",
+            headers: {
+            'Content-Type': 'application/json',
+        // Authorization: 'Bearer your-token-here' // if your API requires an authorization header
+            },
+            body: JSON.stringify(data)
+        })
+        if (!r.ok){
+            throw new Error(`HTTP error! status: ${r.status}`);
+        }
+    }
   };
 
   return (
@@ -111,7 +131,7 @@ const Lessons = () => {
             <Modal
                 key={lesson}
                 isOpen={activeModal === lesson.toLowerCase()}
-                onClose={() => {closeModal(lesson)}}
+                onClose={async () => { await closeModal(lesson)}}
                 title={lesson}
             >
               {/* <p>{`${lesson.toLowerCase()}`}</p> */}
