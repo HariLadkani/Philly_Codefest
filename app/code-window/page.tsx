@@ -1,15 +1,18 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Editor } from "@monaco-editor/react";
+import { Button } from "@/components/ui/button";  // Ensure you have this button component or replace it with a standard HTML button if not available.
+import { Editor } from "@monaco-editor/react";  // Import the Editor from @monaco-editor/react package.
+import { stat } from 'fs';
 import Link from 'next/link';
 
 export function CodeWindow() {
   const [code, setCode] = useState("// Write your code here");
-  const [output, setOutput] = useState("");  // State for storing the output of the code
+  // const [output, setOutput] = useState("");  // State for storing the output of the code
   const [chatMessage, setChatMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<string[]>([]);
+  const [status, setStatus] = useState("No Output");
+  const [output, setOutput] = useState("Press the run button to generate output");
 
   const handleEditorChange = (value: string | undefined, event: any) => {
     if (value !== undefined) {
@@ -17,14 +20,39 @@ export function CodeWindow() {
     }
   };
 
-  // Simulate running the code and capturing the output
-  const handleRunCode = () => {
-    console.log("Running the code:", code);
-    // For simulation purposes, let's pretend it always returns "Execution result"
-    const simulatedOutput = "Execution result: " + Math.random(); // Random output to simulate different results
-    setOutput(simulatedOutput);
-  };
 
+
+  // Function to handle the execution of the code when the "Run" button is clicked.
+  async function handleRunCode(){
+    console.log("Running the code:", code);
+    const res = await fetch('http://127.0.0.1:3002/run',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Authorization: 'Bearer your-token-here' // if your API requires an authorization header
+      },
+      body: JSON.stringify({
+        "code": code,
+      }),
+    });
+    if (!res.ok){
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    const data = await res.json();
+
+    if (data.response == "Success"){
+      setStatus("Success");
+      setOutput("Code compiled");
+    }
+    else{
+      setStatus("error");
+      setOutput("Error compiling code!" + data.response + " Please try again!");
+    }
+    console.log(status);
+    console.log(output);
+  }
+    // Here you could add logic to execute the code or send it to a server for safe execution.
+  // Function to handle sending the chat message
   const handleSendMessage = async () => {
     if (chatMessage.trim() === "") return;
     setChatHistory(prevHistory => [...prevHistory, `You: ${chatMessage}`]);
@@ -35,6 +63,8 @@ export function CodeWindow() {
       setChatHistory(prevHistory => [...prevHistory, `AI: ${aiResponse}`]);
     }, 500);
   };
+
+
 
   return (
       <div className="flex w-full min-h-screen">
@@ -58,8 +88,8 @@ export function CodeWindow() {
               <div className="rounded-md border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                 <h2 className="text-xl font-semibold">Code Editor</h2>
                 <Editor
-                    height="200px"
-                    defaultLanguage="javascript"
+                    height="400px"
+                    defaultLanguage="python"
                     defaultValue={code}
                     onChange={handleEditorChange}
                     theme="vs-dark"
