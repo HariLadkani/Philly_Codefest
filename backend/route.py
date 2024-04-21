@@ -42,7 +42,7 @@ def check_python_code(code):
     try:
         process = multiprocessing.Process(target=execute_code, args=(code,))
         process.start()
-        process.join(timeout=5)  # Adjust timeout as necessary
+        process.join(timeout=10)  # Adjust timeout as necessary
         if process.is_alive():
             process.terminate()
             process.join()
@@ -57,11 +57,34 @@ def check_python_code(code):
 @app.route("/run", methods=["POST"])
 def run():
     content = f"""{request.get_json()["code"]}"""
-    print(content)
     res = check_python_code(content)
-    print(f"Res")
-    print(res)
     return res
+
+@app.route("/submit", methods=["POST"])
+def submit():
+    data = request.get_json()
+    content = f"""{data["code"]}"""
+    res = check_python_code(content)
+    if res["Status"] == "Success":
+        id = data["id"]
+        with open("../questions.json", "r") as f:
+            question_data = json.load(f)[id]["test_cases"]
+        func = content.split(":")[0].split(" ")[1].split("(")[0]
+        s = 0
+        print(question_data, func)
+        for i in range(len(question_data["input"])):
+            print(question_data["input"][i])
+            new_cont = content + "\n" + f"{func}" + f"{str(tuple(question_data['input'][i]))}"
+            out = execute_code(new_cont)
+            print(out, question_data["output"][i])
+            if out.strip() == question_data["output"][i].strip():
+                s += 1
+        if s != len(question_data["input"]):
+            return {"Status": "Fail", "Testcases passed": f"{s} out of {len(question_data['input'])}"}
+        else:
+            return {"Status": "Success", "Testcases passed": f"All Testcases passed"}
+    return res
+
 
 @app.route("/llm_api", methods=["POST"])
 def llm_api():
