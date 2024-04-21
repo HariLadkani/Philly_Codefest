@@ -221,27 +221,24 @@ export function CodeWindow() {
                     {msg}
                   </div>
                 ))}
-              </div>
-              <div className="flex">
-                <ul id="unord">
-                  <li>
-                    <input
-                      type="text"
-                      value={chatMessage}
-                      onChange={(e) => setChatMessage(e.target.value)}
-                      className="flex-1 rounded-l-md p-2 dark:bg-gray-700 dark:text-white"
-                      placeholder="Type your message..."
-                    />
-                  </li>
-                  <li>
-                    <Button
-                      onClick={handleSendMessage}
-                      className="rounded-r-md"
-                    >
-                      Send
-                    </Button>
-                  </li>
-                </ul>
+                </div>
+                <div className="flex">
+                  <ul id="unord">
+                    <li>
+                      <input
+                          id = 'inputtab'
+                          type="text"
+                          value={chatMessage}
+                          onChange={e => setChatMessage(e.target.value)}
+                          className="flex-1 rounded-l-md p-2 dark:bg-gray-700 dark:text-white"
+                          placeholder="Type your message..."
+                      />
+                    </li>
+                    <li>
+                      <Button id='sendbutton'onClick={handleSendMessage} className="rounded-r-md">Send</Button>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
