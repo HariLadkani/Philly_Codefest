@@ -84,7 +84,7 @@ export function Simulator() {
                     alt="Person"
                     className="mx-auto rounded-full shadow-lg"
                     height={200}
-                    src="../woman/woman.png"
+                    src="/woman.png"
                     style={{
                         aspectRatio: "400/400",
                         objectFit: "cover",
