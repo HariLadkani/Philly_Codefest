@@ -54,15 +54,38 @@ export function CodeWindow() {
     // Here you could add logic to execute the code or send it to a server for safe execution.
   // Function to handle sending the chat message
   const handleSendMessage = async () => {
-    if (chatMessage.trim() === "") return;
-    setChatHistory(prevHistory => [...prevHistory, `You: ${chatMessage}`]);
-    setChatMessage("");
+    if (chatMessage.trim() === "") return;  // Avoid sending empty messages
 
-    setTimeout(() => {
-      const aiResponse = "This is a hardcoded response from the AI.";
+    const userMessage = chatMessage;
+    setChatMessage("");  // Clear the message input
+    setChatHistory(prevHistory => [...prevHistory, `You: ${userMessage}`]); // Add the user message to the chat history
+
+    try {
+      // Send the user message to your backend
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: userMessage }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      // Assume the backend returns a JSON with a 'response' field containing the AI's response
+      const aiResponse = data.response;
+
+      // Update the chat history with the AI's response
       setChatHistory(prevHistory => [...prevHistory, `AI: ${aiResponse}`]);
-    }, 500);
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      // Here you could update the chat history with a message indicating the error or handle it in another way
+    }
   };
+
 
 
 

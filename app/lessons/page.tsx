@@ -32,9 +32,9 @@ export function Lessons() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-200">
             <div className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold font-sans">Data Types</h2>
+              <h2 className="text-2xl font-bold font-sans">Comments</h2>
               <p className="text-gray-500 dark:text-gray-400 font-sans">
-                Explore the fundamental data types in Python, including integers, floats, booleans, and strings.
+              Dive into the world of strings, including string manipulation, formatting, and common string methods.
               </p>
               <Link
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-200 dark:focus:ring-gray-300 font-sans"
@@ -60,9 +60,9 @@ export function Lessons() {
           </div>
           <div className="bg-white rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-200">
             <div className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold font-sans">Arrays</h2>
+              <h2 className="text-2xl font-bold font-sans">Output</h2>
               <p className="text-gray-500 dark:text-gray-400 font-sans">
-                Discover how to work with arrays, including creating, accessing, and manipulating array elements.
+                Discover how to validate output with print
               </p>
               <Link
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-200 dark:focus:ring-gray-300 font-sans"
@@ -74,10 +74,9 @@ export function Lessons() {
           </div>
           <div className="bg-white rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-200">
             <div className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold font-sans">Functions</h2>
+              <h2 className="text-2xl font-bold font-sans">Variables</h2>
               <p className="text-gray-500 dark:text-gray-400 font-sans">
-                Explore the power of functions in Python, including defining, calling, and passing arguments to
-                functions.
+                Variables in Python: Where your data finds a name and makes your code come alive!
               </p>
               <Link
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-200 dark:focus:ring-gray-300 font-sans"
