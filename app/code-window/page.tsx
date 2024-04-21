@@ -6,11 +6,16 @@ import { Editor } from "@monaco-editor/react";  // Import the Editor from @monac
 import { stat } from 'fs';
 import Link from 'next/link';
 
+interface Message {
+  role: string;
+  content: string;
+}
+
 export function CodeWindow() {
   const [code, setCode] = useState("// Write your code here");
   // const [output, setOutput] = useState("");  // State for storing the output of the code
   const [chatMessage, setChatMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState<string[]>([]);
+  const [chatHistory, setChatHistory] = useState<Message[]>([{role: "system", content: "You are a helpful assistant."}]);
   const [status, setStatus] = useState("No Output");
   const [output, setOutput] = useState("Press the run button to generate output");
 
@@ -58,9 +63,14 @@ export function CodeWindow() {
     if (chatMessage.trim() === "") return;  // Avoid sending empty messages
 
     const userMessage = chatMessage;
+    console.log(userMessage)
     setChatMessage("");  // Clear the message input
-    setChatHistory(prevHistory => [...prevHistory, `You: ${userMessage}`]); // Add the user message to the chat history
+    
+    const newmsg:Message = {role :"user", content: userMessage}
+    setChatHistory(prevHistory => [...prevHistory, newmsg]) 
 
+    console.log(chatHistory)
+  
     try {
       // Send the user message to your backend
       const response = await fetch('http://127.0.0.1:3002/llm_chatbot', {
@@ -68,7 +78,7 @@ export function CodeWindow() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({"message": chatHistory}),
+        body: JSON.stringify(chatHistory.concat(newmsg)),
       });
 
       if (!response.ok) {
@@ -77,10 +87,15 @@ export function CodeWindow() {
 
       const data = await response.json();
       // Assume the backend returns a JSON with a 'response' field containing the AI's response
-      const aiResponse = data.response;
+      
+      const aiResponse = data["feedback"];
+      console.log(aiResponse)
+
+      const messageresponse: Message = {role: "assistant", content: aiResponse}
+      setChatHistory(prevHistory => [...prevHistory, messageresponse]) 
 
       // Update the chat history with the AI's response
-      setChatHistory(prevHistory => [...prevHistory, `AI: ${aiResponse}`]);
+      //setChatHistory(prevHistory => [...prevHistory, `AI: ${aiResponse}`]);
     } catch (error) {
       console.error("Failed to send message:", error);
       // Here you could update the chat history with a message indicating the error or handle it in another way
@@ -131,9 +146,12 @@ export function CodeWindow() {
               <h2 className="text-xl font-semibold">Chat</h2>
               <div className="flex flex-col h-[600px] rounded-md border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800">
                 <div className="flex-1 overflow-auto mb-4">
-                  {chatHistory.map((msg, index) => (
-                      <div key={index} className="text-black dark:text-white p-2">{msg}</div>
-                  ))}
+                {chatHistory.slice(1).map((msg, index) => (
+                  <div key={index}
+                    className={`text-black dark:text-white p-2 ${index % 2 === 0 ? 'odd-item' : 'even-item'}`}>
+                    {msg['content']}
+                  </div>
+                ))}
                 </div>
                 <div className="flex">
                   <ul id="unord">
