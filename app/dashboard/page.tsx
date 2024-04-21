@@ -40,10 +40,12 @@ export function Dashboard() {
             Code Practice
           </Button>
           </Link>
+          <Link href="/simulator">
           <Button className="justify-start gap-2" size="sm" variant="ghost">
             <PlayIcon className="w-4 h-4" />
             Simulator
           </Button>
+          </Link>
         </nav>
       </div>
       <div className="flex-1 p-8">
@@ -89,9 +91,12 @@ export function Dashboard() {
               Code Practice
             </Link>
           </Button>
-          
+
+
           <Button className="bg-[#F3E5F5] text-[#9C27B0] hover:bg-[#E1BEE7]" variant="primary">
+            <Link href="/simulator">
             Simulator
+            </Link>
           </Button>
         </div>
       </div>
