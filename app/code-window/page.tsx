@@ -41,9 +41,9 @@ export function CodeWindow() {
     const data = await res.json();
     console.log(data)
 
-    if (data["status"] === "Success"){
+    if (data["Status"] === "Success"){
       setStatus("Success");
-      setOutput("Code compiled");
+      setOutput("Code compiled. Output is : " + data["Message"]);
     }
     else{
       setStatus("Error");
@@ -63,12 +63,12 @@ export function CodeWindow() {
 
     try {
       // Send the user message to your backend
-      const response = await fetch('/api/chat', {
+      const response = await fetch('http://127.0.0.1:3002/llm_chatbot', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({"message": chatHistory}),
       });
 
       if (!response.ok) {
@@ -123,7 +123,7 @@ export function CodeWindow() {
                 </div>
                 {/* Output window for displaying the results of the code execution */}
                 <div className="mt-4 bg-gray-50 border border-gray-200 rounded p-2 text-black dark:bg-gray-900 dark:text-white">
-                  <strong>Output:</strong> {output}
+                  <strong>{status}</strong> {output}
                 </div>
               </div>
             </div>
@@ -136,14 +136,20 @@ export function CodeWindow() {
                   ))}
                 </div>
                 <div className="flex">
-                  <input
-                      type="text"
-                      value={chatMessage}
-                      onChange={e => setChatMessage(e.target.value)}
-                      className="flex-1 rounded-l-md p-2 dark:bg-gray-700 dark:text-white"
-                      placeholder="Type your message..."
-                  />
-                  <Button onClick={handleSendMessage} className="rounded-r-md">Send</Button>
+                  <ul id="unord">
+                    <li>
+                      <input
+                          type="text"
+                          value={chatMessage}
+                          onChange={e => setChatMessage(e.target.value)}
+                          className="flex-1 rounded-l-md p-2 dark:bg-gray-700 dark:text-white"
+                          placeholder="Type your message..."
+                      />
+                    </li>
+                    <li>
+                      <Button onClick={handleSendMessage} className="rounded-r-md">Send</Button>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
