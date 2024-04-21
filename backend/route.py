@@ -19,17 +19,22 @@ CORS(app)
 
 def execute_code(code):
     try:
-        exec(code, {"__name__": "__main__"})
+        f = StringIO()
+        with redirect_stdout(f):
+            exec(code, {"__name__": "__main__"})
+        return f.getvalue()
     except Exception as e:
         return str(e)
 
-
 def check_python_code(code):
+    global output
     try:
         # Check if the code compiles
         compile(code, '<string>', 'exec')
     except SyntaxError as e:
-        return "SyntaxError"
+        print("Syntax Error")
+        print(str(e))
+        return {"Status":"SyntaxError", "Message":str(e)}
 
     # Set a timeout and execute the code
     try:
@@ -39,19 +44,22 @@ def check_python_code(code):
         if process.is_alive():
             process.terminate()
             process.join()
-            return "Infinite"
+            return {"Status": "Infinite", "Message": "Compile Timeout Error, please check for infinite loops"}
     except timeout_decorator.timeout_decorator.TimeoutError:
-        return "Infinite"
+        return {"Status": "Infinite", "Message": "Compile Timeout Error, please check for infinite loops"}
     except Exception as e:
-        return f"Error"
-
-    return "Success"
+        return {"Status":"SyntaxError", "Message":e}
+    return {"Status":"Success","Message" : execute_code(code)}
 
 
 @app.route("/run", methods=["POST"])
 def run():
     content = f"""{request.get_json()["code"]}"""
-    return {"response": check_python_code(content)}
+    print(content)
+    res = check_python_code(content)
+    print(f"Res")
+    print(res)
+    return res
 
 @app.route("/llm_api", methods=["POST"])
 def llm_api():
@@ -61,13 +69,15 @@ def llm_api():
     response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:personal::9GCHGPWm", messages=[{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": content}])
     msg = response.choices[0].message.content
     return {"response": msg.split(" ")[0], "feedback": " ".join(msg.split(" ")[1:])}
-
-@app.route("/llm_chatbot", methods=["POST"])
+    
+    @app.route("/llm_chatbot", methods=["POST"])
 def llm_chatbot_msg():
     client = OpenAI(api_key=os.getenv('OPENAI_API'))
-    response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:personal::9GCHGPWm", messages=[{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": request.get_json()["message"]}])
+    print(request.get_json())
+    response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:personal::9GCHGPWm", messages=request.get_json())
     msg = response.choices[0].message.content
     return {"feedback": msg}
+
 
 
 @app.route("/recommend_question", methods=['POST'])
