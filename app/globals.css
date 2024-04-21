@@ -35,3 +35,14 @@ body {
 #unord{
   list-style-type: none;
 }
+
+.even-item {
+  border: 2px solid #FFA400; /* orange color for even items */
+  border-radius: 10px; /* Rounded corners */
+}
+
+.odd-item {
+  border: 2px solid #05C3DD; /* aqua blue color for odd items */
+  border-radius: 10px; /* Rounded corners */
+  margin-bottom: 10px;
+}
