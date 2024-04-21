@@ -4,14 +4,15 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";  // Ensure you have this button component or replace it with a standard HTML button if not available.
 import { Editor } from "@monaco-editor/react";  // Import the Editor from @monaco-editor/react package.
 import { stat } from 'fs';
+import Link from 'next/link';
 
 export function CodeWindow() {
   const [code, setCode] = useState("// Write your code here");
+  // const [output, setOutput] = useState("");  // State for storing the output of the code
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState<string[]>([]);
   const [status, setStatus] = useState("No Output");
   const [output, setOutput] = useState("Press the run button to generate output");
-  // Function to update the state with the latest code from the editor.
-  const [chatMessage, setChatMessage] = useState("");  // State for storing chat message
-  const [chatHistory, setChatHistory] = useState<string[]>([]); // State to store chat history
 
   const handleEditorChange = (value: string | undefined, event: any) => {
     if (value !== undefined) {
@@ -19,8 +20,8 @@ export function CodeWindow() {
     }
   };
 
-  
-  
+
+
   // Function to handle the execution of the code when the "Run" button is clicked.
   async function handleRunCode(){
     console.log("Running the code:", code);
@@ -88,11 +89,20 @@ export function CodeWindow() {
 
 
 
+
   return (
       <div className="flex w-full min-h-screen">
         <main className="flex-1 bg-gray-100 dark:bg-gray-950">
           <div className="container mx-auto grid grid-cols-[1fr_300px] gap-8 p-8 md:p-12">
-            <div className="space-y-6">
+            {/* Back to Dashboard button */}
+            <div className="col-span-full mb-4">
+              <Link legacyBehavior href="/dashboard">
+                <a className="inline-block p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200">
+                  Back to Dashboard
+                </a>
+              </Link>
+            </div>
+            <div className="space-y-6 flex-1">
               <div className="rounded-md border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                 <h2 className="text-xl font-semibold">Question</h2>
                 <p className="mt-2 text-gray-500 dark:text-gray-400">
@@ -111,13 +121,15 @@ export function CodeWindow() {
                 <div className="mt-4 flex justify-end">
                   <Button onClick={handleRunCode}>Run</Button>
                 </div>
+                {/* Output window for displaying the results of the code execution */}
+                <div className="mt-4 bg-gray-50 border border-gray-200 rounded p-2 text-black dark:bg-gray-900 dark:text-white">
+                  <strong>Output:</strong> {output}
+                </div>
               </div>
             </div>
-            <div
-                className="rounded-md border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div className="rounded-md border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
               <h2 className="text-xl font-semibold">Chat</h2>
-              <div
-                  className="flex flex-col h-[600px] rounded-md border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800">
+              <div className="flex flex-col h-[600px] rounded-md border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800">
                 <div className="flex-1 overflow-auto mb-4">
                   {chatHistory.map((msg, index) => (
                       <div key={index} className="text-black dark:text-white p-2">{msg}</div>
@@ -133,12 +145,6 @@ export function CodeWindow() {
                   />
                   <Button onClick={handleSendMessage} className="rounded-r-md">Send</Button>
                 </div>
-              </div>
-            </div>
-            <div className="rounded-md border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:border-gray-800">
-              <h2 className="text-xl font-semibold">{status}</h2>
-              <div className="mt-4 h-[600px] rounded-md border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800 dark:border-gray-800" >
-              {output}
               </div>
             </div>
           </div>
