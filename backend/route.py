@@ -103,7 +103,7 @@ def write_completion_list():
 
 @app.route("/recommend_question", methods=['POST'])
 def recommend():
-    content = request.get_json()["completion_list"]
+    content = request.get_json()["data"]
     loaded = tf.keras.models.load_model("model.keras")
     prediction = loaded.predict(np.array([content]))[0]
     questions = [i for i in range(1, 22)]

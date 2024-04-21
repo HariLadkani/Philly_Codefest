@@ -132,7 +132,20 @@ export function CodeWindow() {
     }
     const data = await res.json();
     console.log(data);
+    const res_2 = await fetch("http://127.0.0.1:3002/write_completion_list", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            // Authorization: 'Bearer your-token-here' // if your API requires an authorization header
+        },
+        body: JSON.stringify({
+            completion_list: completionList,
+            cur_q: cur_q+1,
+        }),
+    });
+    
     setcur_q(cur_q+1);
+
   }
   // Here you could add logic to execute the code or send it to a server for safe execution.
   // Function to handle sending the chat message
@@ -240,7 +253,6 @@ export function CodeWindow() {
                   </ul>
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </main>
