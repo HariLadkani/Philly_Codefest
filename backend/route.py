@@ -3,11 +3,14 @@ from flask_cors import CORS
 import multiprocessing
 import timeout_decorator
 import tensorflow as tf
+from io import StringIO
 import random
 import numpy as np
 from openai import OpenAI
+import json
 from dotenv import load_dotenv
 import os
+from contextlib import redirect_stdout
 
 # Load the environment variables from the .env file
 load_dotenv()
@@ -15,7 +18,6 @@ load_dotenv()
 app = Flask(__name__)
 
 CORS(app)
-
 
 def execute_code(code):
     try:
@@ -77,6 +79,25 @@ def llm_chatbot_msg():
     response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:personal::9GCHGPWm", messages=request.get_json())
     msg = response.choices[0].message.content
     return {"feedback": msg}
+
+@app.route("/get_completion_list", methods=["GET"])
+def get_completion_list():
+    # if completion_list.json is empty populate it
+    if os.path.getsize("completion_list.json") == 0:
+        with open("completion_list.json", "w") as file:
+            file.write(json.dumps({"completion_list": [0]*28, "cur_q": 0}))
+    # Read from completion_list.json
+    with open("completion_list.json", "r") as file:
+        completion_list = json.loads(file.read())
+    return completion_list
+
+@app.route("/write_completion_list", methods=["POST"])
+def write_completion_list():
+    # Write to completion_list.json
+    with open("completion_list.json", "w") as file:
+        file.write(json.dumps(request.get_json()))
+    return {"Status": "Success"}
+
 
 
 
