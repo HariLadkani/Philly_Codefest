@@ -157,6 +157,7 @@ export function CodeWindow() {
                   <ul id="unord">
                     <li>
                       <input
+                          id = 'inputtab'
                           type="text"
                           value={chatMessage}
                           onChange={e => setChatMessage(e.target.value)}
@@ -165,7 +166,7 @@ export function CodeWindow() {
                       />
                     </li>
                     <li>
-                      <Button onClick={handleSendMessage} className="rounded-r-md">Send</Button>
+                      <Button id='sendbutton'onClick={handleSendMessage} className="rounded-r-md">Send</Button>
                     </li>
                   </ul>
                 </div>
