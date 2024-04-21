@@ -72,7 +72,7 @@ def llm_api():
     msg = response.choices[0].message.content
     return {"response": msg.split(" ")[0], "feedback": " ".join(msg.split(" ")[1:])}
     
-    @app.route("/llm_chatbot", methods=["POST"])
+@app.route("/llm_chatbot", methods=["POST"])
 def llm_chatbot_msg():
     client = OpenAI(api_key=os.getenv('OPENAI_API'))
     print(request.get_json())
